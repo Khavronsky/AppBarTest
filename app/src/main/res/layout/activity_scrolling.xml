@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.khavronsky.appbartest.ScrollingActivity">
+
+    <com.khavronsky.appbartest.CustomCollapsedLayout
+        android:id="@+id/customLayout"
+        android:layout_width="match_parent"
+        android:layout_height="164dp"
+        android:background="#ffffff"
+        app:layout_behavior="com.khavronsky.appbartest.CustomLayotBehavior"
+        app:layout_collapseMode="parallax"
+        app:layout_scrollFlags="scroll|enterAlways">
+
+    </com.khavronsky.appbartest.CustomCollapsedLayout>
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="#00000000"
+
+        >
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="#ffffff"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+                <LinearLayout
+                    android:id="@+id/title_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/toolbar_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:ems="10"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        android:text="Ирландские пляски Ирландские пляски"
+                        android:textSize="18sp"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/toolbar_sub_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="end"
+                        android:ems="10"
+                        android:maxLines="1"
+                        android:text="Кардио"
+                        android:textSize="12sp"
+                        android:visibility="invisible" />
+                </LinearLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+            <com.khavronsky.appbartest.CustomCollapsedLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:visibility="invisible">
+
+            </com.khavronsky.appbartest.CustomCollapsedLayout>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+    <View
+        android:id="@+id/actionBaShadowView1"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="-2dp"
+        android:background="@drawable/bottom_shadow_dark"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="bottom" />
+    <include layout="@layout/content_scrolling" />
+
+</android.support.design.widget.CoordinatorLayout>
