@@ -58,6 +58,11 @@ public class CustomCollapsedLayout extends FrameLayout {
         mImageView = (ImageView) findViewById(R.id.image);
         mLayout = findViewById(R.id.lin_layout);
         mTitleLayout = findViewById(R.id.title_layout);
+
+        mTitle.setTag("title");
+        mSubTitle.setTag("subTitle");
+        mImageView.setTag("image");
+        mLayout.setTag("layout");
     }
 
     public View getTitleLayout() {

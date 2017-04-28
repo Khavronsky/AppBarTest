@@ -46,7 +46,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/title_layout"
-        android:background="#00000000"
         android:orientation="vertical">
 
         <LinearLayout
@@ -103,6 +102,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
 </RelativeLayout>

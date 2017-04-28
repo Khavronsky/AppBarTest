@@ -11,43 +11,11 @@ import android.view.View;
 //com.khavronsky.appbartest.CustomLayotBehavior
 public class CustomLayotBehavior extends CoordinatorLayout.Behavior<CustomCollapsedLayout> {
 
-    private final static float MIN_AVATAR_PERCENTAGE_SIZE = 0.3f;
-
-    private final static int EXTRA_FINAL_AVATAR_PADDING = 80;
-
     private final static String TAG = "behavior";
 
     private Context mContext;
 
-    private float mCustomFinalYPosition;
-
-    private float mCustomStartXPosition;
-
-    private float mCustomStartToolbarPosition;
-
-    private float mCustomStartHeight;
-
-    private float mCustomFinalHeight;
-
-    private float mAvatarMaxSize;
-
-    private float mFinalLeftAvatarPadding;
-
-    private float mStartPosition;
-
-    private int mStartXPosition;
-
-    private float mStartToolbarPosition;
-
-    private int mStartYPosition;
-
-    private int mFinalYPosition;
-
-    private int mStartHeight;
-
-    private int mFinalXPosition;
-
-    private float mChangeBehaviorPoint;
+    private int standartY;
 
     float maxForAlpha, maxForText, alpha;
 
@@ -61,14 +29,21 @@ public class CustomLayotBehavior extends CoordinatorLayout.Behavior<CustomCollap
 
     private float mStartExtraDescription;
 
-    private boolean first = true;
-
     private float mStartLayoutY;
+
     private float mStartLayoutX;
 
     private float mStartTitleLayoutY;
 
     private float mStartTitleLayoutX;
+
+    private float mStartImageViewX;
+
+    private float mStartImageViewY;
+
+    private boolean first = true;
+
+    private ICCListener mListener;
 
     public CustomLayotBehavior() {
     }
@@ -89,59 +64,89 @@ public class CustomLayotBehavior extends CoordinatorLayout.Behavior<CustomCollap
     public boolean onDependentViewChanged(final CoordinatorLayout parent, final CustomCollapsedLayout child,
             final View dependency) {
         logHell(parent, child, dependency);
-        if (first){
-            startPosition(child);
-        }
 
-
-//        maybeInitProperties(child, dependency);
         float asd = 56 * mContext.getResources().getDisplayMetrics().density;
         maxForAlpha = dependency.getHeight() - 56 * mContext.getResources()
                 .getDisplayMetrics().density;
-//        maxForText = dependency.getHeight() - 56 * mContext.getResources().getDisplayMetrics().density * 2f;
-        // рассчитываем прозрачность
-        alpha = 1 - Math.abs(dependency.getY()) / maxForAlpha;
+        alpha = (float) (1 - Math.abs(dependency.getY()) / maxForAlpha * 0.5);
 
         child.setY((float) (asd));
+        child.setAlpha((float) (alpha));
+        if (first) {
+            startPosition(child);
+        }
+        int[] a1 = {0, 0};
+        child.getLocationOnScreen(a1);
+        standartY = a1[1];
+        child.getImageView().setScaleY((float) (alpha));
+        child.getImageView().setScaleX((float) (alpha));
+        if (dependency.getY() < -450.0f) {
+//            child.getImageView().setX((float) (mStartImageViewX + correction(child.getImageView().getWidth())));
+            child.getImageView().setY((float) (mStartImageViewY + (dependency.getY() + 450.0f)));
+        } else {
+            child.getImageView().setY(mStartImageViewY);
 
-//        child.setScaleX(alpha);
-//        child.setScaleY(alpha);
-        child.setAlpha((float) (alpha *1.1));
-        child.getImageView().setScaleY(alpha);
-        child.getImageView().setScaleX(alpha);
-
-//        child.getTitle().setTextScaleX(alpha);
-//        child.getTitle().setScaleY(alpha);
-//        child.getTitle().setY((float) (mStartTitle + dependency.getY()*0.2));
-//        child.getSubTitle().setTextScaleX(alpha);
-//        child.getSubTitle().setScaleY(alpha);
-//        child.getSubTitle().setY((float) (mStartSubTitle  + dependency.getY()*0.3));
-//        child.getValue().setTextScaleX(alpha);
-//        child.getValue().setScaleY(alpha);
-//        child.getValue().setY((float) (mStartValue  + dependency.getY()*1.5));
-//        child.getUnit().setTextScaleX(alpha);
-//        child.getUnit().setScaleY(alpha);
-//        child.getUnit().setY((float) (mStartUnit  + dependency.getY()*1.5));
-//        child.getExtraDescription().setTextScaleX(alpha);
-//        child.getExtraDescription().setScaleY(alpha);
-//        child.getExtraDescription().setY((float) (mStartExtraDescription  + dependency.getY()*1.5));
+        }
 
         child.getTitleLayout().setScaleX(alpha);
         child.getTitleLayout().setScaleY(alpha);
-        child.getTitleLayout().setY((float) (mStartTitleLayoutY + dependency.getY()*0.4));
+        child.getTitleLayout().setY((float) (mStartTitleLayoutY + dependency.getY() * 0.45));
         child.getTitleLayout().setX((float) (mStartTitleLayoutX - correction(child.getTitleLayout().getWidth())));
+        hideView(child.getTitle(), true);
 
+        hideView(child.getSubTitle(), true);
 
         child.getLayout().setScaleX(alpha);
         child.getLayout().setScaleY(alpha);
-        child.getLayout().setY((float) (mStartLayoutY + dependency.getY()*0.8));
+        if (dependency.getY() > -450.0f) {
+            child.getLayout().setY((float) (mStartLayoutY + dependency.getY() * 0.8));
+        } else {
+            child.getLayout().setY((float) ((mStartLayoutY - 360.0f) + dependency.getY() + 450.0f));
+        }
         child.getLayout().setX((float) (mStartLayoutX - correction(child.getLayout().getWidth())));
+        hideView2(child.getImageView(),child.getLayout());
 
         return true;
     }
 
-    private float correction (int width){
-        return (width - width *alpha)/2;
+    void hideView(View v, boolean title){
+        int[] a = {0, 0};
+        v.getLocationOnScreen(a);
+        Log.d(TAG, "hideView: " + v.getTag() + " ___ " + standartY + " <-> " + a[1]);
+        int visibility;
+        if (standartY > a[1] - (v.getY()*(1-alpha))) {
+            visibility = View.INVISIBLE;
+            v.setVisibility(visibility);
+            visibility = View.VISIBLE;
+        } else {
+            visibility = View.VISIBLE;
+            v.setVisibility(visibility);
+            visibility = View.INVISIBLE;
+        }
+
+        if (title){
+            mListener.setTitleVisibility(visibility);
+        } else {
+            mListener.setSubTitleVisibility(visibility);
+        }
+    }
+
+    void hideView2(View v, View v2) {
+        int[] a = {0, 0};
+        v.getLocationOnScreen(a);
+        Log.d(TAG, "hideView: " + v.getTag() + " ___ " + standartY + " <-> " + a[1]);
+
+        if (standartY > a[1] - (v.getHeight()/2 - v.getHeight()/2*alpha  )) {
+            v.setVisibility(View.INVISIBLE);
+            v2.setVisibility(View.INVISIBLE);
+        } else {
+            v.setVisibility(View.VISIBLE);
+            v2.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private float correction(int width) {
+        return (width - width * alpha) / 2;
     }
 
     private void startPosition(final CustomCollapsedLayout child) {
@@ -154,28 +159,39 @@ public class CustomLayotBehavior extends CoordinatorLayout.Behavior<CustomCollap
         mStartLayoutX = child.getLayout().getX();
         mStartTitleLayoutY = child.getTitleLayout().getY();
         mStartTitleLayoutX = child.getTitleLayout().getX();
+        mStartImageViewY = child.getImageView().getY();
+        mStartImageViewX = child.getImageView().getX();
         first = false;
     }
 
     private void logHell(final CoordinatorLayout parent, final CustomCollapsedLayout child,
-            final View dependency){
+            final View dependency) {
 //        Log.d("logHell", "child.getHeight() - " + child.getHeight());
 //        Log.d("logHell", "child.getY() - " + child.getY());
 //        Log.d("logHell", "child.getX() - " + child.getX());
 //        Log.d("logHell", "dependency.getHeight() - " + dependency.getHeight());
 //        Log.d("logHell", "dependency.getX() - " + dependency.getX());
         Log.d("logHell", "dependency.getY() - " + dependency.getY());
-        Log.d("logHell", "mStartTitle - " + mStartTitle );
+        Log.d("logHell", "mStartTitle - " + mStartTitle);
         Log.d("logHell", "mStartSubTitle - " + mStartSubTitle);
-        Log.d("logHell", "mStartValue - " + mStartValue );
-        Log.d("logHell", "mStartUnit - " + mStartUnit );
+        Log.d("logHell", "mStartValue - " + mStartValue);
+        Log.d("logHell", "mStartUnit - " + mStartUnit);
         Log.d("logHell", "mStartExtraDescription - " + mStartExtraDescription);
-        Log.d("logHell", "mStartLayoutY - " + mStartLayoutY );
-        Log.d("logHell", "mStartLayoutX - " + mStartLayoutX );
+        Log.d("logHell", "mStartLayoutY - " + mStartLayoutY);
+        Log.d("logHell", "mStartLayoutX - " + mStartLayoutX);
 //        Log.d("logHell", "dependency.getTranslationY() - " + dependency.getTranslationY());
 //        Log.d("logHell", "dependency.getAlpha() - " + dependency.getAlpha());
 //        Log.d("logHell", "dependency.getScaleY() - " + dependency.getScaleY());
         Log.d("logHell", "alpha " + alpha);
+    }
+
+    void setICCListener(ICCListener listener){
+        this.mListener = listener;
+    }
+
+    public interface ICCListener{
+        void setTitleVisibility(int visibility);
+        void setSubTitleVisibility(int visibility);
     }
 }
 
